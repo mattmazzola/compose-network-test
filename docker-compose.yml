@@ -1,0 +1,72 @@
+version: '3.4'
+
+services:
+  api:
+    build:
+      context: api
+      dockerfile: Dockerfile
+    environment:
+      - HOST=0.0.0.0
+      - PORT=3002
+    ports:
+      - "3002:3002"
+    volumes:
+        - "./dapr-components/:/dapr-components"
+    networks:
+      - mynetwork
+    depends_on:
+      - db
+
+  api-dapr:
+    image: "daprio/daprd:latest"
+    command: ["./daprd",
+      "-app-id", "api",
+      "-app-port", "3002",
+      "-log-level", "debug",
+      "-log-as-json",
+      "-components-path", "./dapr-components"]
+    volumes:
+        - "./dapr-components/:/dapr-components"
+    depends_on:
+      - api
+    network_mode: "service:api"
+
+  db:
+    build:
+      context: db
+      dockerfile: Dockerfile
+    environment:
+      - HOST=0.0.0.0
+      - PORT=3003
+    ports:
+      - "3003:3003"
+    volumes:
+        - "./dapr-components/:/dapr-components"
+    networks:
+      - mynetwork
+    depends_on:
+      - redis
+
+  db-dapr:
+    image: "daprio/daprd:latest"
+    command: ["./daprd",
+      "-app-id", "db",
+      "-app-port", "3003",
+      "-log-level", "debug",
+      "-log-as-json",
+      "-components-path", "/dapr-components"]
+    volumes:
+        - "./dapr-components/:/dapr-components"
+    depends_on:
+      - db
+    network_mode: "service:db"
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6383:6379"
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:

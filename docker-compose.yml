@@ -10,8 +10,6 @@ services:
       - PORT=3002
     ports:
       - "3002:3002"
-    volumes:
-        - "./dapr-components/:/dapr-components"
     networks:
       - mynetwork
     depends_on:
@@ -40,8 +38,6 @@ services:
       - PORT=3003
     ports:
       - "3003:3003"
-    volumes:
-        - "./dapr-components/:/dapr-components"
     networks:
       - mynetwork
     depends_on:

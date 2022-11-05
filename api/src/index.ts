@@ -60,7 +60,7 @@ server.get('/info/routes', async () => {
 
 async function start() {
     try {
-        console.log(`http://localhost:${PORT} `)
+        console.log(`http://localhost:${PORT}`)
         await server.listen({
             port: PORT,
             host: HOST,
